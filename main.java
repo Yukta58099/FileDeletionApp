@@ -76,3 +76,28 @@ public class FileDeletionApp extends JFrame {
 
         JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm:ss");
         timeSpinner.setEditor(timeEditor);
+          selectFileButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selectFile();
+            }
+        });
+
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                scheduleFileDeletion();
+            }
+        });
+        add(l1);
+        add(l2);
+        add(l3);
+        add(l4);
+        add(filePathField);
+        add(selectFileButton);
+        add(dateSpinner);
+        add(timeSpinner);
+        add(deleteButton);
+        setVisible(true);
+    }
+
