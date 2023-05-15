@@ -76,7 +76,8 @@ public class FileDeletionApp extends JFrame {
 
         JSpinner.DateEditor timeEditor = new JSpinner.DateEditor(timeSpinner, "HH:mm:ss");
         timeSpinner.setEditor(timeEditor);
-          selectFileButton.addActionListener(new ActionListener() {
+
+        selectFileButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectFile();
@@ -103,19 +104,20 @@ public class FileDeletionApp extends JFrame {
 
     private void selectFile() {
         JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES); // Allow selection of files and folders
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             filePathField.setText(selectedFile.getAbsolutePath());
         }
     }
-    
+
     private void scheduleFileDeletion() {
         String filePath = filePathField.getText();
         Date deletionDateTime = getSelectedDeletionDateTime();
 
         if (filePath.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please select a file.");
+            JOptionPane.showMessageDialog(this, "Please select a file or folder.");
             return;
         }
 
@@ -142,18 +144,17 @@ public class FileDeletionApp extends JFrame {
                 fileDeletionTimer.cancel();
             }
         }, deletionDateTime);
-        JOptionPane.showMessageDialog(this, "File deletion scheduled successfully.");
+        JOptionPane.showMessageDialog(this, "File or folder deletion scheduled successfully.");
     }
 
     private Date getSelectedDeletionDateTime() {
         Date selectedDate = (Date) dateSpinner.getValue();
         Date selectedTime = (Date) timeSpinner.getValue();
 
-        if (selectedDate == null
-
-                || selectedTime == null) {
+        if (selectedDate == null || selectedTime == null) {
             return null;
         }
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(selectedDate);
 
@@ -166,18 +167,47 @@ public class FileDeletionApp extends JFrame {
 
         return calendar.getTime();
     }
-      private void deleteFile(String filePath) {
+
+    private void deleteFile(String filePath) {
         File file = new File(filePath);
         if (file.exists()) {
-            if (file.delete()) {
-                JOptionPane.showMessageDialog(this, "File deleted successfully: " + filePath);
+            if (file.isDirectory()) {
+                deleteDirectory(file);
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to delete file: " + filePath);
+                if (file.delete()) {
+                    JOptionPane.showMessageDialog(this, "File deleted successfully: " + filePath);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to delete file: " + filePath);
+                }
             }
         } else {
-            JOptionPane.showMessageDialog(this, "File does not exist: " + filePath);
+            JOptionPane.showMessageDialog(this, "File or directory does not exist: " + filePath);
         }
     }
+
+    private void deleteDirectory(File directory) {
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteDirectory(file);
+                } else {
+                    if (file.delete()) {
+                        System.out.println("Deleted file: " + file.getAbsolutePath());
+                    } else {
+                        System.out.println("Failed to delete file: " + file.getAbsolutePath());
+                    }
+                }
+            }
+        }
+
+        if (directory.delete()) {
+            System.out.println("Deleted directory: " + directory.getAbsolutePath());
+        } else {
+            System.out.println("Failed to delete directory: " + directory.getAbsolutePath());
+        }
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -186,4 +216,3 @@ public class FileDeletionApp extends JFrame {
         });
     }
 }
-
