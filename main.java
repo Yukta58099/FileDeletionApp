@@ -101,3 +101,11 @@ public class FileDeletionApp extends JFrame {
         setVisible(true);
     }
 
+    private void selectFile() {
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            filePathField.setText(selectedFile.getAbsolutePath());
+        }
+    }
