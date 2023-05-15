@@ -178,5 +178,12 @@ public class FileDeletionApp extends JFrame {
             JOptionPane.showMessageDialog(this, "File does not exist: " + filePath);
         }
     }
-
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new FileDeletionApp();
+            }
+        });
+    }
+}
 
