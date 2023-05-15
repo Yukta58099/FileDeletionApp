@@ -109,3 +109,61 @@ public class FileDeletionApp extends JFrame {
             filePathField.setText(selectedFile.getAbsolutePath());
         }
     }
+    
+    private void scheduleFileDeletion() {
+        String filePath = filePathField.getText();
+        Date deletionDateTime = getSelectedDeletionDateTime();
+
+        if (filePath.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please select a file.");
+            return;
+        }
+
+        if (deletionDateTime == null) {
+            JOptionPane.showMessageDialog(this, "Please select a valid deletion date and time.");
+            return;
+        }
+
+        Date currentDateTime = new Date();
+        if (deletionDateTime.before(currentDateTime)) {
+            JOptionPane.showMessageDialog(this, "Selected deletion date and time should be in the future.");
+            return;
+        }
+
+        if (fileDeletionTimer != null) {
+            fileDeletionTimer.cancel();
+        }
+
+        fileDeletionTimer = new Timer();
+        fileDeletionTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                deleteFile(filePath);
+                fileDeletionTimer.cancel();
+            }
+        }, deletionDateTime);
+        JOptionPane.showMessageDialog(this, "File deletion scheduled successfully.");
+    }
+
+    private Date getSelectedDeletionDateTime() {
+        Date selectedDate = (Date) dateSpinner.getValue();
+        Date selectedTime = (Date) timeSpinner.getValue();
+
+        if (selectedDate == null
+
+                || selectedTime == null) {
+            return null;
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(selectedDate);
+
+        Calendar timeCalendar = Calendar.getInstance();
+        timeCalendar.setTime(selectedTime);
+
+        calendar.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
+        calendar.set(Calendar.MINUTE, timeCalendar.get(Calendar.MINUTE));
+        calendar.set(Calendar.SECOND, timeCalendar.get(Calendar.SECOND));
+
+        return calendar.getTime();
+    }
+
