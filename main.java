@@ -166,4 +166,17 @@ public class FileDeletionApp extends JFrame {
 
         return calendar.getTime();
     }
+      private void deleteFile(String filePath) {
+        File file = new File(filePath);
+        if (file.exists()) {
+            if (file.delete()) {
+                JOptionPane.showMessageDialog(this, "File deleted successfully: " + filePath);
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to delete file: " + filePath);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "File does not exist: " + filePath);
+        }
+    }
+
 
